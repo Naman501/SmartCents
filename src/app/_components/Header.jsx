@@ -18,13 +18,13 @@ function Header(){
         {isSignedIn ? (<UserButton/>) : 
         <div className="flex items-center gap-4">
         <Link href='/dashboard'>
-        <Button variant="outline" className=" hover:bg-slate-100 rounded-full">
+        <Button variant="outline"  className=" hover:bg-slate-100 cursor-pointer rounded-full">
             Dashboard
         </Button>
         </Link>
           <Link href='/dashboard'>
         <Button variant="outline" className="    rounded-full bg-blue-800
-        hover:bg-blue-700 hover:text-white text-white">
+        hover:bg-blue-700 cursor-pointer hover:text-white text-white">
             Get Started
         </Button>
         </Link>
