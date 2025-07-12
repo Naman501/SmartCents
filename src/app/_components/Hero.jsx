@@ -9,7 +9,7 @@ return(
       <ContainerScroll
         titleComponent={
           <>
-            <h1 className="text-4xl font-semibold text-black dark:text-white">
+            <h1 className="text-5xl font-bold text-black dark:text-white">
               Manage your Money with AI-Driven Personal<br />
               <span className="text-4xl md:text-[6rem] text-blue-800 font-bold mt-1 leading-none">
                 Finance advisor
