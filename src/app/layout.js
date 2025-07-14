@@ -21,6 +21,8 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
       <ClerkProvider
+       signInUrl="/sign-in"
+  signUpUrl="/sign-up"
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
       >
     <html lang="en">
