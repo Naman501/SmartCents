@@ -3,13 +3,16 @@ import React , {useState, useEffect} from 'react';
 import { UserButton ,useUser} from '@clerk/nextjs'
 import CardInfo from "./_components/CardInfo"
 import { db } from '../../../../utils/dbConfig';
-import { getTableColumns } from 'drizzle-orm';
-import { Budgets } from '../../../../utils/schema';
+import { desc,eq,sql,getTableColumns } from 'drizzle-orm';
+import { Budgets,Expenses,Incomes } from '../../../../utils/schema';
+import BarChartDashboard from './_components/BarChartDashboard';
+import ExpenseListTable from './expenses/_components/ExpenseListTable';
+import BudgetItem from "./budgets/_components/BudgetItem";
 
 function Dashboard(){
     const {user} = useUser();
     const [budgetList,setBudgetList] = useState([])
-    const [expenseList,setExpensetList] = useState([])
+    const [expenseList,setExpenseList] = useState([])
     const [incomeList,setIncomeList] = useState([])
 
     useEffect(()=>{
@@ -21,13 +24,17 @@ function Dashboard(){
 const getBudgetList =async ()=>{
     const result = await db.select(
        { ...getTableColumns(Budgets),
-        totalSpend: sql`sum(${Expenses.amount})`.mapWith(Number),
-        totalItem: sql`count(${Expenses.id})`.mapWith(Number),
-    }).from(Budgets).leftJoin(expenses , eq(Budgets.id ,Expenses.budgetId)).where(eq(Budgets.createdBy,user?.primaryEmailAddress)).groupBy(Budgets.id).orderBy(desc(Budgets.id))
-
-    setBudgetList(result)
-    getAllExpenses();
-    getIncomeList();
+        totalSpend: sql`SUM(${Expenses.amount})`.mapWith(Number),
+        totalItem: sql`COUNT(${Expenses.id})`.mapWith(Number),
+    }).
+    from(Budgets)
+    .leftJoin(Expenses , eq(Budgets.id , Expenses.budgetId))
+    .where(eq(Budgets.createdBy,user?.primaryEmailAddress?.emailAddress))
+    .groupBy(Budgets.id).orderBy(desc(Budgets.id))
+  
+    setBudgetList(result);
+   await getAllExpenses();
+   await getIncomeList();
 }
 
 
@@ -40,7 +47,7 @@ const getAllExpenses= async ()=>{
     })
      .from(Budgets)
       .rightJoin(Expenses, eq(Budgets.id, Expenses.budgetId))
-      .where(eq(Budgets.createdBy, user?.primaryEmailAddress.emailAddress))
+      .where(eq(Budgets.createdBy, user?.primaryEmailAddress?.emailAddress))
       .orderBy(desc(Expenses.id));
     setExpensesList(result);
 }
@@ -76,7 +83,7 @@ return(
 <div className='lg:col-span-2'>
     <BarChartDashboard budgetList={budgetList} />
 
-    <ExpenseListTable   expensesList={expensesList}
+    <ExpenseListTable   expensesList={expenseList}
             refreshData={() => getBudgetList()}
             />
 </div>
@@ -86,11 +93,11 @@ return(
           <h2 className="font-bold text-lg">Latest Budgets</h2>
           {budgetList?.length > 0
             ? budgetList.map((budget, index) => (
-                <BudgetItem budget={budget} key={index} />
+                <BudgetItem budget={budget} key={budget.id} />
               ))
             : [1, 2, 3, 4].map((item, index) => (
-                <div
-                  className="h-[180xp] w-full
+                <div key={index}
+                  className="h-[180px] w-full
                  bg-slate-200 rounded-lg animate-pulse"
                 ></div>
               ))}

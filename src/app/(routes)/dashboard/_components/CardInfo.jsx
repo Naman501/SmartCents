@@ -112,7 +112,7 @@ function CardInfo({budgetList , incomeList}){
                     </div>
                 </div>
             ) :(
-w
+<div></div>
             )}
         </div>
         </>
